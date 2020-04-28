@@ -1,18 +1,16 @@
 use super::timer::Timer;
 
 use core::ptr;
-use f3::{
-    hal::{
-        gpio::{
-            gpioa::PAx,
-            gpiod::PDx,
-            Output,
-            PushPull,
-        },
-        prelude::*,
-        spi::Spi,
-        stm32f30x::{self, SPI1},
+use stm32f30x_hal::{
+    gpio::{
+        gpioa::PAx,
+        gpiod::PDx,
+        Output,
+        PushPull,
     },
+    prelude::*,
+    spi::Spi,
+    stm32f30x::{self, SPI1},
 };
 use hal::spi::{Mode, Phase, Polarity};
 

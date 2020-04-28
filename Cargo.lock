@@ -108,26 +108,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "f3"
-version = "0.6.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f081c0ce81216d24179e220382c9d6199a6223c69584caa0d3b86691376ac4e9"
-dependencies = [
- "l3gd20",
- "lsm303dlhc",
- "stm32f30x-hal",
-]
-
-[[package]]
-name = "generic-array"
-version = "0.11.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8107dafa78c80c848b71b60133954b4a58609a3a1a5f9af037ecc7f67280f369"
-dependencies = [
- "typenum",
-]
-
-[[package]]
 name = "generic-array"
 version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -143,27 +123,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0ed1e761351b56f54eb9dcd0cfaca9fd0daecf93918e1cfc01c8a3d26ee7adcd"
 dependencies = [
  "typenum",
-]
-
-[[package]]
-name = "l3gd20"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f3da4a9711f4c14fc5cdf6631189de01c58536a00e5a370c071dcbd10b5b96ec"
-dependencies = [
- "embedded-hal",
- "generic-array 0.11.1",
-]
-
-[[package]]
-name = "lsm303dlhc"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9e5d1a5c290951321d1b0d4a40edd828537de9889134a0e67c5146542ae57706"
-dependencies = [
- "cast",
- "embedded-hal",
- "generic-array 0.11.1",
 ]
 
 [[package]]
@@ -238,8 +197,8 @@ dependencies = [
  "cortex-m 0.6.2",
  "cortex-m-rt",
  "embedded-hal",
- "f3",
  "panic-semihosting",
+ "stm32f30x-hal",
 ]
 
 [[package]]
@@ -256,7 +215,6 @@ checksum = "6ccfdb5ee5de8c8c2d89645fa3d213148322a60ee90597fe1d656d463881763b"
 dependencies = [
  "bare-metal",
  "cortex-m 0.5.10",
- "cortex-m-rt",
  "vcell",
 ]
 

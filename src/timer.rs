@@ -1,5 +1,5 @@
 use cast::{u16, u32};
-use f3::hal::{
+use stm32f30x_hal::{
     rcc::Clocks,
     stm32f30x::{RCC, TIM2},
     time::*,

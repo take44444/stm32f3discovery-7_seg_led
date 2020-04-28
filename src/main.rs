@@ -3,15 +3,15 @@
 
 extern crate panic_semihosting; // panic handler
 extern crate cortex_m;
-extern crate f3;
 extern crate embedded_hal as hal;
+extern crate stm32f30x_hal;
 extern crate cast;
 
 mod timer;
 mod shift;
 
 use cortex_m_rt::entry;
-use f3::hal::prelude::*;
+use stm32f30x_hal::prelude::*;
 
 #[entry]
 fn main() -> ! {
@@ -19,7 +19,7 @@ fn main() -> ! {
     loop {
         for i in 10..200 {
             timer.change_period(i.hz());
-            
+
             shift_reg.select_digit(3);
             shift_reg.display_num(1);
             wait!(timer.sr_uif_is_set());
