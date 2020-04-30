@@ -54,8 +54,8 @@ pub fn init() -> (Timer, ShiftReg) {
         dp.SPI1,
         (sck, miso, mosi),
         Mode {
-            phase: Phase::CaptureOnSecondTransition,
-            polarity: Polarity::IdleHigh,
+            phase: Phase::CaptureOnFirstTransition,
+            polarity: Polarity::IdleLow,
         },
         1.mhz(),
         clocks,
