@@ -1,30 +1,24 @@
 use cast::{u16, u32};
-use stm32f30x_hal::{
-    rcc::Clocks,
-    stm32f30x::{RCC, TIM2},
-    time::*,
-};
+use stm32f30x::{RCC, TIM2};
 
-pub struct Timer {
-    clocks: Clocks,
-}
+use super::hertz::*;
+
+const HSI: u32 = 8_000_000;
+
+pub struct Timer;
 
 impl Timer {
-    pub fn tim2<T>(timeout: T, clocks: Clocks) -> Self
+    pub fn tim2<T>(timeout: T) -> Self
     where
         T: Into<Hertz>,
     {
-        // let dp = stm32f30x::Peripherals::take().unwrap();
-        // let mut rcc = dp.RCC.constrain();
         let rcc = unsafe { &*RCC::ptr() }; // 1073876992
         // enable and reset peripheral to a clean slate state
         rcc.apb1enr.modify(|_, w| w.tim2en().set_bit());
         rcc.apb1rstr.modify(|_, w| w.tim2rst().set_bit());
         rcc.apb1rstr.modify(|_, w| w.tim2rst().clear_bit());
 
-        let timer = Timer {
-            clocks,
-        };
+        let timer = Timer;
         timer.start(timeout.into());
 
         timer
@@ -53,10 +47,20 @@ impl Timer {
 
     // NOTE(allow) `w.psc().bits()` is not safe for TIM2 due to some SVD omission
     #[allow(unused_unsafe)]
-    pub fn start(&self, timeout: Hertz) {
+    pub fn start<T>(&self, timeout: T)
+    where
+        T: Into<Hertz>,
+    {
         let rcc = unsafe { &*RCC::ptr() };
+
+        let pllmul = 2;
+        let sysclk = pllmul * HSI / 2;
+        let hclk = sysclk;
+
         let ppre1_bits = (rcc.cfgr.read().bits() << 21) >> 29;
-        let ppre1 = 1 << (ppre1_bits - 0b011);
+        let ppre1: u32 = if ppre1_bits & 0b100 == 0 { 1 } else { 1 << (ppre1_bits - 0b011) };
+
+        let pclk1 = hclk / u32(ppre1);
 
         let tim = unsafe { &*TIM2::ptr() };
         // pause
@@ -64,8 +68,8 @@ impl Timer {
         // restart counter
         tim.cnt.reset();
 
-        let frequency = timeout.0;
-        let ticks = self.clocks.pclk1().0 * if ppre1 == 1 { 1 } else { 2 }
+        let frequency = timeout.into().0;
+        let ticks: u32 = pclk1 * if ppre1 == 1 { 1 } else { 2 }
             / frequency;
 
         let psc = u16((ticks - 1) / (1 << 16)).unwrap();

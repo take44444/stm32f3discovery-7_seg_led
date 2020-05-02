@@ -1,17 +1,20 @@
 #![no_main]
 #![no_std]
 
-extern crate panic_semihosting; // panic handler
-extern crate cortex_m;
-extern crate embedded_hal as hal;
-extern crate stm32f30x_hal;
 extern crate cast;
-
-mod timer;
-mod shift;
+extern crate panic_semihosting; // panic handler
+extern crate stm32f30x;
 
 use cortex_m_rt::entry;
-use stm32f30x_hal::prelude::*;
+
+mod gpio;
+mod hertz;
+mod pin;
+mod shift;
+mod spi;
+mod timer;
+
+use crate::hertz::U32Ext;
 
 #[entry]
 fn main() -> ! {

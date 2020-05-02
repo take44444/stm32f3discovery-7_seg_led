@@ -1,20 +1,13 @@
-use super::timer::Timer;
-
 use core::ptr;
-use stm32f30x_hal::{
-    gpio::{
-        gpioa::PAx,
-        gpiod::PDx,
-        Output,
-        PushPull,
-    },
-    prelude::*,
-    spi::Spi,
-    stm32f30x::{self, SPI1},
-};
-use hal::spi::{Mode, Phase, Polarity};
+use stm32f30x::{self, SPI1};
 
-static NUMBERS: [u8; 11] = [
+use super::gpio;
+use super::hertz::*;
+use super::pin;
+use super::spi;
+use super::timer;
+
+const NUMBERS: [u8; 11] = [
     0b11101011, // 0
     0b00101000, // 1
     0b10110011, // 2
@@ -29,55 +22,28 @@ static NUMBERS: [u8; 11] = [
 ];
 
 pub struct ShiftReg {
-    pub digits: [PDx<Output<PushPull>>; 4],
-    pub rck: PAx<Output<PushPull>>,
+    pub digits: [pin::PDxL<pin::OutputPushPull>; 4],
+    pub rck: pin::PAxL<pin::OutputPushPull>,
 }
 
-pub fn init() -> (Timer, ShiftReg) {
-    let dp = stm32f30x::Peripherals::take().unwrap();
-    
-    let mut rcc = dp.RCC.constrain();
+pub fn init() -> (timer::Timer, ShiftReg) {
+    gpio::activate_gpioa();
+    gpio::activate_gpiod();
 
-    let mut flash = dp.FLASH.constrain();
-    let clocks = rcc.cfgr.freeze(&mut flash.acr);
+    let timer = timer::Timer::tim2(100.hz());
 
-    let mut gpioa = dp.GPIOA.split(&mut rcc.ahb);
-    let mut gpiod = dp.GPIOD.split(&mut rcc.ahb);
-
-    let timer = Timer::tim2(100.hz(), clocks);
-
-    let sck = gpioa.pa5.into_af5(&mut gpioa.moder, &mut gpioa.afrl);
-    let miso = gpioa.pa6.into_af5(&mut gpioa.moder, &mut gpioa.afrl);
-    let mosi = gpioa.pa7.into_af5(&mut gpioa.moder, &mut gpioa.afrl);
+    pin::PAxL::<pin::Floating>::new(5).mode_af5();
+    pin::PAxL::<pin::Floating>::new(6).mode_af5();
+    pin::PAxL::<pin::Floating>::new(7).mode_af5();
  
-    Spi::spi1(
-        dp.SPI1,
-        (sck, miso, mosi),
-        Mode {
-            phase: Phase::CaptureOnFirstTransition,
-            polarity: Polarity::IdleLow,
-        },
-        1.mhz(),
-        clocks,
-        &mut rcc.apb2,
-    );
+    spi::Spi::spi1(1.mhz());
 
-    let mut rck = gpioa
-        .pa4
-        .into_push_pull_output(&mut gpioa.moder, &mut gpioa.otyper);
+    let rck = pin::PAxL::<pin::Floating>::new(4).mode_push_pull_output();
 
-    let mut dig1 = gpiod
-        .pd1
-        .into_push_pull_output(&mut gpiod.moder, &mut gpiod.otyper);
-    let mut dig2 = gpiod
-        .pd2
-        .into_push_pull_output(&mut gpiod.moder, &mut gpiod.otyper);
-    let mut dig3 = gpiod
-        .pd3
-        .into_push_pull_output(&mut gpiod.moder, &mut gpiod.otyper);
-    let mut dig4 = gpiod
-        .pd4
-        .into_push_pull_output(&mut gpiod.moder, &mut gpiod.otyper);
+    let dig1 = pin::PDxL::<pin::Floating>::new(1).mode_push_pull_output();
+    let dig2 = pin::PDxL::<pin::Floating>::new(2).mode_push_pull_output();
+    let dig3 = pin::PDxL::<pin::Floating>::new(3).mode_push_pull_output();
+    let dig4 = pin::PDxL::<pin::Floating>::new(4).mode_push_pull_output();
 
     #[allow(deprecated)]
     {
@@ -92,12 +58,12 @@ pub fn init() -> (Timer, ShiftReg) {
         timer, 
         ShiftReg {
             digits: [
-                dig1.downgrade(),
-                dig2.downgrade(),
-                dig3.downgrade(),
-                dig4.downgrade()
+                dig1,
+                dig2,
+                dig3,
+                dig4
             ],
-            rck: rck.downgrade(),
+            rck: rck,
         }
     )
 }
