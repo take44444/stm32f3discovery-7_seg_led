@@ -26,36 +26,35 @@ pub struct ShiftReg {
     pub rck: pin::PAxL<pin::OutputPushPull>,
 }
 
-pub fn init() -> (timer::Timer, ShiftReg) {
-    gpio::activate_gpioa();
-    gpio::activate_gpiod();
-
-    let timer = timer::Timer::tim2(100.hz());
-
-    pin::PAxL::<pin::Floating>::new(5).mode_af5();
-    pin::PAxL::<pin::Floating>::new(6).mode_af5();
-    pin::PAxL::<pin::Floating>::new(7).mode_af5();
- 
-    spi::Spi::spi1(1.mhz());
-
-    let rck = pin::PAxL::<pin::Floating>::new(4).mode_push_pull_output();
-
-    let dig1 = pin::PDxL::<pin::Floating>::new(1).mode_push_pull_output();
-    let dig2 = pin::PDxL::<pin::Floating>::new(2).mode_push_pull_output();
-    let dig3 = pin::PDxL::<pin::Floating>::new(3).mode_push_pull_output();
-    let dig4 = pin::PDxL::<pin::Floating>::new(4).mode_push_pull_output();
-
-    #[allow(deprecated)]
-    {
-        rck.set_high();
-        dig1.set_low();
-        dig2.set_low();
-        dig3.set_low();
-        dig4.set_low();
-    }
+impl ShiftReg {
+    pub fn new() -> Self {
+        gpio::activate_gpioa();
+        gpio::activate_gpiod();
     
-    (
-        timer, 
+        timer::tim2(100.hz());
+    
+        pin::PAxL::<pin::Floating>::new(5).mode_af5();
+        pin::PAxL::<pin::Floating>::new(6).mode_af5();
+        pin::PAxL::<pin::Floating>::new(7).mode_af5();
+     
+        spi::spi1(1.mhz());
+    
+        let rck = pin::PAxL::<pin::Floating>::new(4).mode_push_pull_output();
+    
+        let dig1 = pin::PDxL::<pin::Floating>::new(1).mode_push_pull_output();
+        let dig2 = pin::PDxL::<pin::Floating>::new(2).mode_push_pull_output();
+        let dig3 = pin::PDxL::<pin::Floating>::new(3).mode_push_pull_output();
+        let dig4 = pin::PDxL::<pin::Floating>::new(4).mode_push_pull_output();
+    
+        #[allow(deprecated)]
+        {
+            rck.set_high();
+            dig1.set_low();
+            dig2.set_low();
+            dig3.set_low();
+            dig4.set_low();
+        }
+        
         ShiftReg {
             digits: [
                 dig1,
@@ -65,10 +64,8 @@ pub fn init() -> (timer::Timer, ShiftReg) {
             ],
             rck: rck,
         }
-    )
-}
+    }
 
-impl ShiftReg {
     #[allow(deprecated)]
     pub fn display_num(&mut self, number: usize) {
         self.rck.set_low();

@@ -18,26 +18,26 @@ use crate::hertz::U32Ext;
 
 #[entry]
 fn main() -> ! {
-    let (mut timer, mut shift_reg): (timer::Timer, shift::ShiftReg) = shift::init();
+    let mut shift_reg = shift::ShiftReg::new();
     loop {
         for i in 10..200 {
-            timer.change_period(i.hz());
+            timer::tim2_change_period(i.hz());
 
             shift_reg.select_digit(3);
             shift_reg.display_num(1);
-            wait!(timer.updated());
+            wait!(timer::tim2_updated());
     
             shift_reg.select_digit(2);
             shift_reg.display_num(2);
-            wait!(timer.updated());
+            wait!(timer::tim2_updated());
     
             shift_reg.select_digit(1);
             shift_reg.display_num(3);
-            wait!(timer.updated());
+            wait!(timer::tim2_updated());
     
             shift_reg.select_digit(0);
             shift_reg.display_num(4);
-            wait!(timer.updated());
+            wait!(timer::tim2_updated());
         }
     }
 }
