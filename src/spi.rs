@@ -30,14 +30,16 @@ impl Spi {
                 w.frxth().set_bit().ds().bits(0b111).ssoe().clear_bit()
             });
 
-        let pllmul = 2;
+        let pllmul_bits = rcc.cfgr.read().pllmul().bits();
+        let pllmul: u32 = u32(pllmul_bits + 2);
+
+        // let ppre1_bits = (rcc.cfgr.read().bits() << 21) >> 29;
+        let ppre1_bits = rcc.cfgr.read().ppre1().bits();
+        let ppre1: u32 = if ppre1_bits & 0b100 == 0 { 1 } else { 1 << (ppre1_bits - 0b011) };
+        
         let sysclk = pllmul * HSI / 2;
         let hclk = sysclk;
-
-        let ppre1_bits = (rcc.cfgr.read().bits() << 21) >> 29;
-        let ppre1: u32 = if ppre1_bits & 0b100 == 0 { 1 } else { 1 << (ppre1_bits - 0b011) };
-
-        let pclk1 = hclk / u32(ppre1);
+        let pclk1 = hclk / ppre1;
 
         let br = match pclk1 / freq.into().0 {
             0 => unreachable!(),

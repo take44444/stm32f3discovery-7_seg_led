@@ -53,14 +53,16 @@ impl Timer {
     {
         let rcc = unsafe { &*RCC::ptr() };
 
-        let pllmul = 2;
+        let pllmul_bits = rcc.cfgr.read().pllmul().bits();
+        let pllmul: u32 = u32(pllmul_bits + 2);
+
+        // let ppre1_bits = (rcc.cfgr.read().bits() << 21) >> 29;
+        let ppre1_bits = rcc.cfgr.read().ppre1().bits();
+        let ppre1: u32 = if ppre1_bits & 0b100 == 0 { 1 } else { 1 << (ppre1_bits - 0b011) };
+        
         let sysclk = pllmul * HSI / 2;
         let hclk = sysclk;
-
-        let ppre1_bits = (rcc.cfgr.read().bits() << 21) >> 29;
-        let ppre1: u32 = if ppre1_bits & 0b100 == 0 { 1 } else { 1 << (ppre1_bits - 0b011) };
-
-        let pclk1 = hclk / u32(ppre1);
+        let pclk1 = hclk / ppre1;
 
         let tim = unsafe { &*TIM2::ptr() };
         // pause
@@ -72,7 +74,7 @@ impl Timer {
         let ticks: u32 = pclk1 * if ppre1 == 1 { 1 } else { 2 }
             / frequency;
 
-        let psc = u16((ticks - 1) / (1 << 16)).unwrap();
+        let psc = u16((ticks - 1) >> 16).unwrap();
         tim.psc.write(|w| unsafe { w.psc().bits(psc) });
 
         let arr = u16(ticks / u32(psc + 1)).unwrap();
