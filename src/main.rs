@@ -25,19 +25,19 @@ fn main() -> ! {
 
             shift_reg.select_digit(3);
             shift_reg.display_num(1);
-            wait!(timer.sr_uif_is_set());
+            wait!(timer.updated());
     
             shift_reg.select_digit(2);
             shift_reg.display_num(2);
-            wait!(timer.sr_uif_is_set());
+            wait!(timer.updated());
     
             shift_reg.select_digit(1);
             shift_reg.display_num(3);
-            wait!(timer.sr_uif_is_set());
+            wait!(timer.updated());
     
             shift_reg.select_digit(0);
             shift_reg.display_num(4);
-            wait!(timer.sr_uif_is_set());
+            wait!(timer.updated());
         }
     }
 }

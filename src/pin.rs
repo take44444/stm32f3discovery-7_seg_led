@@ -64,7 +64,6 @@ impl<MODE> PAxL<MODE> {
     }
 
     pub fn set_high(&self) {
-        // NOTE(unsafe) atomic write to a stateless register
         unsafe { (*GPIOA::ptr()).bsrr.write(|w| w.bits(1 << self.x)) }
     }
 

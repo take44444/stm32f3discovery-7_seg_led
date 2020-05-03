@@ -84,7 +84,7 @@ impl Timer {
         tim.cr1.modify(|_, w| w.cen().set_bit());
     }
 
-    pub fn sr_uif_is_set(&self) -> Result<(), ()> {
+    pub fn updated(&self) -> Result<(), ()> {
         let tim = unsafe { &*TIM2::ptr() };
         if tim.sr.read().uif().bit_is_clear() {
             Err(())
