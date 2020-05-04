@@ -1,24 +1,17 @@
-use core::marker::PhantomData;
 use stm32f30x::{GPIOA, GPIOD};
 
-pub struct AF5;
-pub struct Floating;
-pub struct OutputPushPull;
-
-pub struct PAxL<MODE> {
+pub struct PAxL {
     x: u8,
-    _mode: PhantomData<MODE>,
 }
 
-impl<MODE> PAxL<MODE> {
-    pub fn new(x: u8) -> PAxL<MODE> {
+impl PAxL {
+    pub fn new(x: u8) -> PAxL {
         PAxL {
             x: x,
-            _mode: PhantomData,
         }
     }
     /// Configures the pin to operate as an push pull output pin
-    pub fn mode_push_pull_output(&self) -> PAxL<OutputPushPull> {
+    pub fn mode_push_pull_output(&self) {
         let gpioa = unsafe { &*GPIOA::ptr() };
 
         let offset = 2 * self.x;
@@ -32,15 +25,10 @@ impl<MODE> PAxL<MODE> {
         // push pull output
         gpioa.otyper
             .modify(|r, w| unsafe { w.bits(r.bits() & !(0b1 << self.x)) });
-
-        PAxL {
-            x: self.x,
-            _mode: PhantomData,
-        }
     }
 
     /// Configures the pin to serve as alternate function 5 (AF5)
-    pub fn mode_af5(&self) -> PAxL<AF5> {
+    pub fn mode_af5(&self) {
         let gpioa = unsafe { &*GPIOA::ptr() };
 
         let offset = 2 * self.x;
@@ -56,11 +44,6 @@ impl<MODE> PAxL<MODE> {
         gpioa.afrl.modify(|r, w| unsafe {
             w.bits((r.bits() & !(0b1111 << offset)) | (af << offset))
         });
-
-        PAxL {
-            x: self.x,
-            _mode: PhantomData,
-        }
     }
 
     pub fn set_high(&self) {
@@ -72,21 +55,19 @@ impl<MODE> PAxL<MODE> {
     }
 }
 
-pub struct PDxL<MODE> {
+pub struct PDxL {
     x: u8,
-    _mode: PhantomData<MODE>,
 }
 
-impl<MODE> PDxL<MODE> {
-    pub fn new(x: u8) -> PDxL<MODE> {
+impl PDxL {
+    pub fn new(x: u8) -> PDxL {
         PDxL {
             x: x,
-            _mode: PhantomData,
         }
     }
 
     /// Configures the pin to operate as an push pull output pin
-    pub fn mode_push_pull_output(&self) -> PDxL<OutputPushPull> {
+    pub fn mode_push_pull_output(&self) {
         let gpiod = unsafe { &*GPIOD::ptr() };
 
         let offset = 2 * self.x;
@@ -100,11 +81,6 @@ impl<MODE> PDxL<MODE> {
         // push pull output
         gpiod.otyper
             .modify(|r, w| unsafe { w.bits(r.bits() & !(0b1 << self.x)) });
-
-        PDxL {
-            x: self.x,
-            _mode: PhantomData,
-        }
     }
 
     pub fn set_high(&self) {

@@ -22,8 +22,8 @@ const NUMBERS: [u8; 11] = [
 ];
 
 pub struct ShiftReg {
-    pub digits: [pin::PDxL<pin::OutputPushPull>; 4],
-    pub rck: pin::PAxL<pin::OutputPushPull>,
+    pub digits: [pin::PDxL; 4],
+    pub rck: pin::PAxL,
 }
 
 impl ShiftReg {
@@ -33,18 +33,23 @@ impl ShiftReg {
     
         timer::tim2(100.hz());
     
-        pin::PAxL::<pin::Floating>::new(5).mode_af5();
-        // pin::PAxL::<pin::Floating>::new(6).mode_af5();
-        pin::PAxL::<pin::Floating>::new(7).mode_af5();
+        pin::PAxL::new(5).mode_af5();
+        // pin::PAxL::new(6).mode_af5();
+        pin::PAxL::new(7).mode_af5();
      
         spi::spi1(1.mhz());
     
-        let rck = pin::PAxL::<pin::Floating>::new(4).mode_push_pull_output();
+        let rck = pin::PAxL::new(4);
+        rck.mode_push_pull_output();
     
-        let dig1 = pin::PDxL::<pin::Floating>::new(1).mode_push_pull_output();
-        let dig2 = pin::PDxL::<pin::Floating>::new(2).mode_push_pull_output();
-        let dig3 = pin::PDxL::<pin::Floating>::new(3).mode_push_pull_output();
-        let dig4 = pin::PDxL::<pin::Floating>::new(4).mode_push_pull_output();
+        let dig1 = pin::PDxL::new(1);
+        dig1.mode_push_pull_output();
+        let dig2 = pin::PDxL::new(2);
+        dig2.mode_push_pull_output();
+        let dig3 = pin::PDxL::new(3);
+        dig3.mode_push_pull_output();
+        let dig4 = pin::PDxL::new(4);
+        dig4.mode_push_pull_output();
     
         #[allow(deprecated)]
         {
