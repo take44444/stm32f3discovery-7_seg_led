@@ -34,7 +34,7 @@ impl ShiftReg {
         timer::tim2(100.hz());
     
         pin::PAxL::<pin::Floating>::new(5).mode_af5();
-        pin::PAxL::<pin::Floating>::new(6).mode_af5();
+        // pin::PAxL::<pin::Floating>::new(6).mode_af5();
         pin::PAxL::<pin::Floating>::new(7).mode_af5();
      
         spi::spi1(1.mhz());
