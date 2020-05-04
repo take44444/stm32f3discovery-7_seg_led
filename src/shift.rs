@@ -1,6 +1,3 @@
-use core::ptr;
-use stm32f30x::{self, SPI1};
-
 use super::gpio;
 use super::hertz::*;
 use super::pin;
@@ -72,14 +69,14 @@ impl ShiftReg {
     }
 
     #[allow(deprecated)]
-    pub fn display_num(&mut self, number: usize) {
+    pub fn display_num(&self, number: usize) {
         self.rck.set_low();
-        unsafe { ptr::write_volatile(&(*SPI1::ptr()).dr as *const _ as *mut u8, NUMBERS[number]) }
+        spi::spi1_send(NUMBERS[number]);
         self.rck.set_high();
     }
 
     #[allow(deprecated)]
-    pub fn select_digit(&mut self, number: usize) {
+    pub fn select_digit(&self, number: usize) {
         for i in 0..4 {
             if i == number {
                 self.digits[number].set_low();

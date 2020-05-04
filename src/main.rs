@@ -18,7 +18,7 @@ use crate::hertz::U32Ext;
 
 #[entry]
 fn main() -> ! {
-    let mut shift_reg = shift::ShiftReg::new();
+    let shift_reg = shift::ShiftReg::new();
     loop {
         for i in 10..200 {
             timer::tim2_change_period(i.hz());

@@ -1,3 +1,4 @@
+use core::ptr;
 use cast::u32;
 use stm32f30x::{RCC, SPI1};
 
@@ -18,8 +19,6 @@ where
 
     let spi = unsafe { &*SPI1::ptr() };
 
-    // FRXTH: RXNE event is generated if the FIFO level is greater than or equal to
-    //        8-bit
     // DS: 8-bit data size
     // SSOE: Slave Select output disabled
     spi.cr2
@@ -50,8 +49,8 @@ where
         _ => 0b111,
     };
 
-    // CPHA: phase
-    // CPOL: polarity
+    // CPHA: 0
+    // CPOL: 0
     // MSTR: master mode
     // BR: 1 MHz
     // SPE: SPI disabled
@@ -82,4 +81,8 @@ where
             .bidimode()
             .clear_bit()
     });
+}
+
+pub fn spi1_send(data: u8) {
+    unsafe { ptr::write_volatile(&(*SPI1::ptr()).dr as *const _ as *mut u8, data) };
 }
