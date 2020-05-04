@@ -53,7 +53,7 @@ where
     // CPOL: 0
     // MSTR: master mode
     // BR: 1 MHz
-    // SPE: SPI disabled
+    // SPE: SPI enabled
     // LSBFIRST: MSB first
     // SSM: enable software slave management (NSS pin free for other uses)
     // SSI: set nss high = master mode
