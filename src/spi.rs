@@ -23,7 +23,7 @@ where
     // SSOE: Slave Select output disabled
     spi.cr2
         .write(|w| unsafe {
-            w.frxth().set_bit().ds().bits(0b111).ssoe().clear_bit()
+            w.ds().bits(0b111).ssoe().clear_bit()
         });
 
     let pllmul_bits = rcc.cfgr.read().pllmul().bits();
