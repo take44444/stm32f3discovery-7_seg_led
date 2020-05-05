@@ -91,11 +91,6 @@ pub fn tim2_updated() -> Result<(), ()> {
 #[macro_export]
 macro_rules! wait {
     ($e:expr) => {
-        loop {
-            match $e {
-                Err(_) => {},
-                Ok(_) => break,
-            }
-        }
+        while let Err(_) = $e {}
     }
 }
