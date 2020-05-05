@@ -21,10 +21,9 @@ where
 
     // DS: 8-bit data size
     // SSOE: Slave Select output disabled
-    spi.cr2
-        .write(|w| unsafe {
-            w.ds().bits(0b111).ssoe().clear_bit()
-        });
+    spi.cr2.write(|w| unsafe {
+        w.ds().bits(0b111).ssoe().clear_bit()
+    });
 
     let pllmul_bits = rcc.cfgr.read().pllmul().bits();
     let pllmul: u32 = u32(pllmul_bits + 2);
