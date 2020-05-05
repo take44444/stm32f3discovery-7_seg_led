@@ -19,8 +19,11 @@ where
     let ppre1_bits = rcc.cfgr.read().ppre1().bits();
     let ppre1: u32 = if ppre1_bits & 0b100 == 0 { 1 } else { 1 << (ppre1_bits - 0b011) };
     
+    let hpre_bits = rcc.cfgr.read().hpre().bits();
+    let hpre: u32 = if hpre_bits & 0b1000 == 0 { 1 } else { 1 << (hpre_bits - 0b0111) };
+    
     let sysclk = pllmul * HSI / 2;
-    let hclk = sysclk;
+    let hclk = sysclk / hpre;
     let pclk1 = hclk / ppre1;
 
     let tim = unsafe { &*TIM2::ptr() };
