@@ -26,6 +26,8 @@ where
     let hclk = sysclk / hpre;
     let pclk1 = hclk / ppre1;
 
+    let tim2_clk = pclk1 * if ppre1 == 1 { 1 } else { 2 }; // Don't forget!
+
     let tim = unsafe { &*TIM2::ptr() };
     // pause
     tim.cr1.modify(|_, w| w.cen().clear_bit());
@@ -33,8 +35,7 @@ where
     tim.cnt.reset();
 
     let frequency = timeout.into().0;
-    let ticks = pclk1 * if ppre1 == 1 { 1 } else { 2 }
-        / frequency;
+    let ticks = tim2_clk / frequency;
 
     let psc = u16((ticks - 1) >> 16).unwrap();
     tim.psc.write(|w| unsafe { w.psc().bits(psc) });
