@@ -71,8 +71,7 @@ where
 {
     release();
     let rcc = unsafe { &*RCC::ptr() }; // 1073876992
-    // enable and reset peripheral to a clean slate state
-    rcc.apb1enr.modify(|_, w| w.tim2en().set_bit());
+    
     rcc.apb1rstr.modify(|_, w| w.tim2rst().set_bit());
     rcc.apb1rstr.modify(|_, w| w.tim2rst().clear_bit());
 
